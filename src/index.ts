@@ -261,7 +261,7 @@ function relaunch() {
     const o = fs.openSync(out, 'a')
     const e = fs.openSync(err, 'a')
     const argv = [].concat(idx.execArgv || [], idx.argv || [])
-    const child = spawn(idx.execPath, argv, { cwd: idx.cwd, detached: true, stdio: ['ignore', o, e], env: process.env })
+    const child = spawn(idx.execPath, argv, { cwd: idx.cwd, detached: true, windowsHide: true, stdio: ['ignore', o, e], env: process.env })
     child.once('error', function (er) { log('relaunch spawn error: ' + String(er)) })
     child.unref()
     log('relaunch: spawned pid ' + child.pid + ' cwd=' + idx.cwd)
@@ -305,6 +305,7 @@ function ensureWatchdog(dynamic: () => RestartConfig): void {
     fs.writeFileSync(watchdogFilePath(), watchdogScript(dynamic().watchdogCooldownMs, dynamic().watchdogPollMs), 'utf8')
     const child = spawn(process.execPath, [watchdogFilePath()], {
       detached: true,
+      windowsHide: true,
       stdio: 'ignore',
       env: process.env,
     })
@@ -384,7 +385,7 @@ function restart(delayMs: number): RestartInfo {
     '  try {',
     '    const out = fs.openSync(logOut, "a")',
     '    const err = fs.openSync(logErr, "a")',
-    '    const child = spawn(process.execPath, argv, { cwd: cwd, detached: true, stdio: ["ignore", out, err], env: process.env })',
+    '    const child = spawn(process.execPath, argv, { cwd: cwd, detached: true, windowsHide: true, stdio: ["ignore", out, err], env: process.env })',
     '    child.once("error", () => process.exit(0))',
     '    child.unref()',
     '  } catch (e) { process.exit(0) }',
@@ -393,6 +394,7 @@ function restart(delayMs: number): RestartInfo {
 
   const helper = spawn(process.execPath, ['-e', helperCode], {
     detached: true,
+    windowsHide: true,
     stdio: 'ignore',
     env: process.env,
   })
