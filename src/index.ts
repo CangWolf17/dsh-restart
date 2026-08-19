@@ -403,7 +403,7 @@ function restart(delayMs: number): RestartInfo {
       + `sh.Run """${CMDEXE}"" /c ""${cmdPath.replace(/"/g, '""')}""", 0, True\r\n`
     fs.writeFileSync(vbsPath, vbs, 'utf8')
     const ps = `$a = New-ScheduledTaskAction -Execute '${WSCRIPT}' -Argument '${vbsPath}'; `
-      + `$t = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(${delayMs + 8000}); `
+      + `$t = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(${(delayMs + 8000) / 1000}); `
       + '$s = New-ScheduledTaskSettingsSet -StartWhenAvailable; '
       + `Register-ScheduledTask -TaskName '${RESTART_TASK_NAME}' -Action $a -Trigger $t -Settings $s -Force | Out-Null`
     const scheduled = spawnSync(POWERSHELL, ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', ps], { stdio: 'ignore' })
